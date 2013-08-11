@@ -1,4 +1,5 @@
 require "tunnelss/version"
+require "tunnelss/configure_with_pow"
 require "eventmachine"
 
 # [Tunnels](http://github.com/rchampourlier/tunnelss)
@@ -23,8 +24,11 @@ require "eventmachine"
 # and maintained by Pat Allan. It is released under the open MIT Licence.
 
 module Tunnelss
+  extend ConfigureWithPow
 
   def self.run!(from = '127.0.0.1:443', to = '127.0.0.1:80')
+    configure_with_pow if pow_present?
+
     from_host, from_port = parse_host_str(from)
     to_host, to_port = parse_host_str(to)
     puts "#{from_host}:#{from_port} --(--)--> #{to_host}:#{to_port}"
@@ -106,8 +110,14 @@ module Tunnelss
   end
 
   class HttpsProxy < HttpProxy
+    include ConfigureWithPow
+
     def post_init
-      start_tls
+      if pow_present?
+        start_tls(:private_key_file => "#{dir}/key.pem", :cert_chain_file => "#{dir}/server.crt", :verify_peer => false)
+      else
+        start_tls
+      end
     end
 
     def relay_from_client(data)
