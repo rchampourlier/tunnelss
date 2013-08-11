@@ -1,5 +1,5 @@
 require 'rspec'
-require 'tunnels'
+require 'tunnelss'
 
 RSpec.configure do |config|
   config.mock_with :rr

@@ -1,10 +1,29 @@
-require "tunnels/version"
+require "tunnelss/version"
 require "eventmachine"
 
-# most of code is from [thin-glazed](https://github.com/freelancing-god/thin-glazed).
-# Copyright © 2012, Thin::Glazed was a Rails Camp New Zealand project, and is developed and maintained by Pat Allan. It is released under the open MIT Licence.
+# [Tunnels](http://github.com/rchampourlier/tunnelss)
+#
+# LICENSE
+#
+# MIT License
+#
+# COPYRIGHTS / CREDITS
+#
+# Most of the code is from [tunnels](https://github.com/jugyo/tunnels) which was a simpler
+# version designed to tunnel HTTPS to HTTP, without performing automatic certificate
+# configuration.
+#
+# [tunnels](https://github.com/jugyo/tunnels)
+# Copyright (c) 2012 jugyo, released under the MIT license.
+#
+# TUNNELS COPYRIGHTS / CREDITS
+#
+# Most of code is from [thin-glazed](https://github.com/freelancing-god/thin-glazed).
+# Copyright © 2012, Thin::Glazed was a Rails Camp New Zealand project, and is developed
+# and maintained by Pat Allan. It is released under the open MIT Licence.
 
-module Tunnels
+module Tunnelss
+
   def self.run!(from = '127.0.0.1:443', to = '127.0.0.1:80')
     from_host, from_port = parse_host_str(from)
     to_host, to_port = parse_host_str(to)

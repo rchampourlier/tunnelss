@@ -1,0 +1,16 @@
+#!/usr/bin/env ruby
+require 'tunnelss'
+unless ARGV.size == 0 || ARGV.size == 2
+  puts <<-D
+Usage:
+    tunnelss [from to]
+
+Examples:
+    tunnelss 443 3000
+    tunnelss localhost:443 localhost:3000
+
+  D
+  exit!
+end
+
+Tunnelss.run!(*ARGV)
