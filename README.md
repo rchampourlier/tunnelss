@@ -6,6 +6,8 @@ It's like the [tunnels gem](https://github.com/jugyo/tunnels) (sure, it's a fork
 
 So now you can finally have a not-far-from-real SSL connection with Pow, with a minimum of efforts!
 
+![](./readme-screenshot.png)
+
 ## The Magic
 
 Tunnelss is a mix between the [tunnels gem](https://github.com/jugyo/tunnels) and the [powssl script](https://gist.github.com/paulnicholson/2050941).
