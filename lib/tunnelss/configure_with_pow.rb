@@ -69,7 +69,8 @@ module Tunnelss::ConfigureWithPow
   def prepare_openssl_config
     Dir.mkdir("#{ca_dir}/newcerts") unless File.exists?("#{ca_dir}/newcerts")
     system "touch #{ca_dir}/index.txt"
-    File.open("#{ca_dir}/serial", 'w') {|f| f.puts '01'}
+    serial = File.exists?("#{ca_dir}/serial") ? File.read("#{ca_dir}/serial").to_i + 1 : 1
+    File.open("#{ca_dir}/serial", 'w') {|f| f.puts ("%02d" % serial).to_s}
     build_openssl_config_file
   end
 
@@ -109,7 +110,7 @@ module Tunnelss::ConfigureWithPow
   end
 
   def pow_domains_str
-    pow_domains.map {|d| "DNS:#{d},DNS:*.#{d}.dev"}.join(',')
+    pow_domains.map {|d| "DNS:#{d}.dev,DNS:*.#{d}.dev"}.join(',')
   end
 
   def pow_dir
