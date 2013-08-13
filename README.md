@@ -59,6 +59,13 @@ or
 
 ## History
 
+### 0.1.1
+
+Fixed 2 issues:
+
+- When generating the certificate again, the index was not incremented, preventing the certificate generation commands from running.
+- `openssl.cnf` file was generated with wrong DNS domains, subdomains were OK but main domains were lacking the `.dev`.
+
 ### 0.1.0
 
 Initial release based on tunnels 1.2.2.
