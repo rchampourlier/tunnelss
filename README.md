@@ -47,17 +47,17 @@ Don't worry, the first time you launch it it will generate a certificate and ask
 
 If you are using rvm:
 
-    $ rvmsudo tunnels
+    $ rvmsudo tunnelss
 
 By default, proxy to 80 port from 443 port.
 
 Specify HTTP port and HTTPS port with:
 
-    $ sudo tunnels 443 3000
+    $ sudo tunnelss 443 3000
 
 or
 
-    $ sudo tunnels 127.0.0.1:443 127.0.0.1:3000
+    $ sudo tunnelss 127.0.0.1:443 127.0.0.1:3000
 
 ## History
 
