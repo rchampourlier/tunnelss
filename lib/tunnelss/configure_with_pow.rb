@@ -1,5 +1,3 @@
-require "pry"
-
 module Tunnelss::ConfigureWithPow
 
   def configure_with_pow
