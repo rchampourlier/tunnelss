@@ -61,6 +61,11 @@ or
 
 ## History
 
+### 0.1.2
+
+- Fix in README
+- Removed dependency on Pry
+
 ### 0.1.1
 
 Fixed 2 issues:
