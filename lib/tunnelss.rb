@@ -1,6 +1,7 @@
 require "tunnelss/version"
 require "tunnelss/configure_with_pow"
 require "eventmachine"
+require 'fileutils'
 
 # [Tunnels](http://github.com/rchampourlier/tunnelss)
 #
