@@ -59,7 +59,22 @@ or
 
     $ sudo tunnelss 127.0.0.1:443 127.0.0.1:3000
 
+## Contributing
+
+Run from the local source code:
+
+    $ sudo script/run
+
+Feel free to submit pull requests. Please document your changes in the description.
+
 ## History
+
+### 0.1.3
+
+- Updated README
+- Added script/run to run from local source
+- Support multiple POW suffixes (https://github.com/rchampourlier/tunnelss/pull/2)
+- Using SHA256 (https://github.com/rchampourlier/tunnelss/pull/3)
 
 ### 0.1.2
 
