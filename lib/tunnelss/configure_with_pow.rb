@@ -39,7 +39,7 @@ module Tunnelss::ConfigureWithPow
 
     puts "Creating SSL keypair for signing #{pow_domain_extensions.join(',')}certificate"
     multi_domain_certificate_param = pow_domain_extensions.map { |e| "CN=*.#{e} Domain CA" }.join('/')
-    system "openssl req -newkey rsa:2048 -batch -x509 -nodes -subj \"/C=US/O=Developer Certificate/#{multi_domain_certificate_param}\" -keyout #{ca_dir}/key.pem -out #{ca_dir}/cert.pem -days 9999 &> /dev/null"
+    system "openssl req -newkey rsa:2048 -batch -x509 -sha256 -nodes -subj \"/C=US/O=Developer Certificate/#{multi_domain_certificate_param}\" -keyout #{ca_dir}/key.pem -out #{ca_dir}/cert.pem -days 9999 &> /dev/null"
     puts "Adding certificate to login keychain as trusted."
     system "security add-trusted-cert -d -r trustRoot -k #{ENV['HOME']}/Library/Keychains/login.keychain #{ca_dir}/cert.pem"
     puts "================================================================================"
@@ -52,7 +52,7 @@ module Tunnelss::ConfigureWithPow
 
     puts "Generating new *.#{pow_domain_extensions.join(',')} certificate"
     multi_domain_certificate_param = pow_domain_extensions.map { |e| "CN=*.#{e}" }.join('/')
-    system "openssl req -newkey rsa:2048 -batch -nodes -subj \"/C=US/O=Developer Certificate/#{multi_domain_certificate_param}\" -keyout #{dir}/key.pem -out #{dir}/csr.pem -days 9999 &> /dev/null"
+    system "openssl req -newkey rsa:2048 -sha256 -batch -nodes -subj \"/C=US/O=Developer Certificate/#{multi_domain_certificate_param}\" -keyout #{dir}/key.pem -out #{dir}/csr.pem -days 9999 &> /dev/null"
     puts "Signing *.#{pow_domain_extensions.join(',')} certificate"
     system "openssl ca -config #{ca_dir}/openssl.cnf -policy policy_anything -batch -days 9999 -out #{dir}/cert.pem -infiles #{dir}/csr.pem &> /dev/null"
 
