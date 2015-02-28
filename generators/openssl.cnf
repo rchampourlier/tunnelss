@@ -16,7 +16,7 @@ private_key      = $dir/key.pem
 RANDFILE         = $dir/.rand
 default_days     = 365     # how long to certify for
 default_crl_days = 30      # how long before next CRL
-default_md       = sha1      # which md to use.
+default_md       = sha256  # which md to use.
 x509_extensions  = usr_cert
 
 [ policy_anything ]
