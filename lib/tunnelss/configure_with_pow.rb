@@ -30,15 +30,16 @@ module Tunnelss::ConfigureWithPow
   end
 
   def ca_exists?
-    File.exists?(ca_dir) and File.exists?("#{ca_dir}/key.pem") and File.exists?("#{ca_dir}/cert.pem")
+    File.exists?(ca_dir) && File.exists?("#{ca_dir}/key.pem") && File.exists?("#{ca_dir}/cert.pem")
   end
 
   def build_ca
     FileUtils.rm_rf(ca_dir) if File.exists?(ca_dir)
     Dir.mkdir(ca_dir)
 
-    puts "Creating SSL keypair for signing *.dev certificate"
-    system "openssl req -newkey rsa:2048 -batch -x509 -nodes -subj \"/C=US/O=Developer Certificate/CN=*.dev Domain CA\" -keyout #{ca_dir}/key.pem -out #{ca_dir}/cert.pem -days 9999 &> /dev/null"
+    puts "Creating SSL keypair for signing #{pow_domain_extensions.join(',')}certificate"
+    multi_domain_certificate_param = pow_domain_extensions.map { |e| "CN=*.#{e} Domain CA" }.join('/')
+    system "openssl req -newkey rsa:2048 -batch -x509 -nodes -subj \"/C=US/O=Developer Certificate/#{multi_domain_certificate_param}\" -keyout #{ca_dir}/key.pem -out #{ca_dir}/cert.pem -days 9999 &> /dev/null"
     puts "Adding certificate to login keychain as trusted."
     system "security add-trusted-cert -d -r trustRoot -k #{ENV['HOME']}/Library/Keychains/login.keychain #{ca_dir}/cert.pem"
     puts "================================================================================"
@@ -49,9 +50,10 @@ module Tunnelss::ConfigureWithPow
   def build_certificate
     prepare_openssl_config
 
-    puts "Generating new *.dev certificate"
-    system "openssl req -newkey rsa:2048 -batch -nodes -subj \"/C=US/O=Developer Certificate/CN=*.dev\" -keyout #{dir}/key.pem -out #{dir}/csr.pem -days 9999 &> /dev/null"
-    puts "Signing *.dev certificate"
+    puts "Generating new *.#{pow_domain_extensions.join(',')} certificate"
+    multi_domain_certificate_param = pow_domain_extensions.map { |e| "CN=*.#{e}" }.join('/')
+    system "openssl req -newkey rsa:2048 -batch -nodes -subj \"/C=US/O=Developer Certificate/#{multi_domain_certificate_param}\" -keyout #{dir}/key.pem -out #{dir}/csr.pem -days 9999 &> /dev/null"
+    puts "Signing *.#{pow_domain_extensions.join(',')} certificate"
     system "openssl ca -config #{ca_dir}/openssl.cnf -policy policy_anything -batch -days 9999 -out #{dir}/cert.pem -infiles #{dir}/csr.pem &> /dev/null"
 
     # Build cert chain
@@ -60,7 +62,7 @@ module Tunnelss::ConfigureWithPow
 
     write_pow_domains_to_cache
 
-    puts "Generated certificate for your Pow .dev domains."
+    puts "Generated certificate for your Pow #{pow_domain_extensions.join(',')} domains."
     true
   end
 
@@ -107,8 +109,20 @@ module Tunnelss::ConfigureWithPow
     @pow_domains ||= Dir["#{pow_dir}/*"].collect {|f| File.basename(f)}
   end
 
+  def pow_domain_extensions
+    @pow_domain_extensions ||= begin
+      domains = `source #{ENV['HOME']}/.powconfig 2> /dev/null && echo $POW_DOMAINS`.chomp.split(',')
+      domains = ['dev'] if domains.empty?
+      domains
+    end
+  end
+
   def pow_domains_str
-    pow_domains.map {|d| "DNS:#{d}.dev,DNS:*.#{d}.dev"}.join(',')
+    pow_domains.map do |d|
+      pow_domain_extensions.map do |e|
+        "DNS:#{d}.#{e},DNS:*.#{d}.#{e}"
+      end
+    end.flatten.join(',')
   end
 
   def pow_dir
