@@ -58,6 +58,21 @@ Specify HTTP port and HTTPS port with:
 or
 
     $ sudo tunnelss 127.0.0.1:443 127.0.0.1:3000
+    
+## Configure
+
+Tunnelss looks at your `~/.pow` directory and `~.powconfig` to determine which domains and domain extensions to create certificates for. If you would like to create a validate certificate for a domain that isn't served by pow, simply add a blank file to `~/.pow` with the name of the domain without the extension.
+
+For example:
+
+```bash
+$ touch ~/.pow/mygreatapp
+$ sudo tunnelss
+```
+
+If you'd like tunnelss to generate certificates valid for additional domain extensions, add the extension to `POW_DOMAINS`.
+
+For an example of getting pow and non-pow served applications running alongside each other, with SSL certificates managed and served by tunnelss, [check out this blog post](http://mikebian.co/https-pow-ssl-rails-apache-development/).
 
 ## Contributing
 
