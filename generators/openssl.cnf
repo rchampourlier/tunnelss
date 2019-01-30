@@ -1,22 +1,55 @@
 [ ca ]
 default_ca      = CA_default
 
+[ req ]
+encrypt_key = no
+default_bits = 2048
+distinguished_name = server_distinguished_name
+
+[ server_distinguished_name ]
+organizationName_default = "Pow"
+
+[ ca_reqext ]
+basicConstraints      = critical,CA:true
+keyUsage              = critical,keyCertSign,cRLSign
+subjectKeyIdentifier  = hash
+
+[ root_ca_ext ]
+keyUsage                = critical,keyCertSign,cRLSign
+basicConstraints        = critical,CA:true
+subjectKeyIdentifier    = hash
+authorityKeyIdentifier  = keyid:always
+
+[ server_reqext ]
+basicConstraints      = CA:FALSE
+keyUsage              = critical,digitalSignature,keyEncipherment
+extendedKeyUsage      = serverAuth
+subjectKeyIdentifier  = hash
+
+[ server_ext ]
+keyUsage                = critical,digitalSignature,keyEncipherment
+basicConstraints        = CA:false
+extendedKeyUsage        = serverAuth
+subjectKeyIdentifier    = hash
+authorityKeyIdentifier  = keyid:always
+
 [ CA_default ]
 dir              = --CA_DIR--
 certs            = $dir/certs
 crl_dir          = $dir/crl
 database         = $dir/index.txt
-unique_subject  = no
 new_certs_dir    = $dir/newcerts
-certificate      = $dir/cert.pem
 serial           = $dir/serial
 crlnumber        = $dir/crlnumber
 crl              = $dir/crl.pem
-private_key      = $dir/key.pem
+certificate      = $dir/root.crt
+private_key      = $dir/root.key
 RANDFILE         = $dir/.rand
+unique_subject   = no
 default_days     = 365     # how long to certify for
 default_crl_days = 30      # how long before next CRL
 default_md       = sha256  # which md to use.
+policy          = policy_anything
 x509_extensions  = usr_cert
 
 [ policy_anything ]
