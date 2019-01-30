@@ -58,7 +58,7 @@ Specify HTTP port and HTTPS port with:
 or
 
     $ sudo tunnelss 127.0.0.1:443 127.0.0.1:3000
-    
+
 ## Configure
 
 Tunnelss looks at your `~/.pow` directory and `~.powconfig` to determine which domains and domain extensions to create certificates for. If you would like to create a validate certificate for a domain that isn't served by pow, simply add a blank file to `~/.pow` with the name of the domain without the extension.
@@ -74,11 +74,25 @@ If you'd like tunnelss to generate certificates valid for additional domain exte
 
 For an example of getting pow and non-pow served applications running alongside each other, with SSL certificates managed and served by tunnelss, [check out this blog post](http://mikebian.co/https-pow-ssl-rails-apache-development/).
 
+Here are some other helpful resources on self-signing local SSL:
+
+* https://gist.github.com/paulnicholson/2050941
+* https://gist.github.com/mtigas/952344
+
+If you need to regenerate the certificates:
+
+```
+rm -Rf ~/.tunnelss/
+```
+
+Note that it's possible that MacOS won't accept the certs that are generated.
+If this occurs you may need to jump into the keychain and mark the `*.dev` cert as "Always Allow".
+
 ## Contributing
 
 Run from the local source code:
 
-    $ sudo script/run
+    $ sudo bundle exec script/run
 
 Feel free to submit pull requests. Please document your changes in the description.
 
