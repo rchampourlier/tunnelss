@@ -26,5 +26,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency "pry"
   s.add_development_dependency "pry-byebug"
 
-  s.add_runtime_dependency "eventmachine", '~> 1.0'
+  s.add_runtime_dependency "eventmachine", '~> 1.2.7'
 end
