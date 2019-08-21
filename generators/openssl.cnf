@@ -2,8 +2,9 @@
 default_ca      = CA_default
 
 [ req ]
-encrypt_key = no
 default_bits = 2048
+default_md       = sha256
+encrypt_key = no
 distinguished_name = server_distinguished_name
 
 [ server_distinguished_name ]
@@ -46,6 +47,7 @@ certificate      = $dir/root.crt
 private_key      = $dir/root.key
 RANDFILE         = $dir/.rand
 unique_subject   = no
+default_bits = 2048
 default_days     = 365     # how long to certify for
 default_crl_days = 30      # how long before next CRL
 default_md       = sha256  # which md to use.
