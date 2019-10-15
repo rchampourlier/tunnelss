@@ -98,6 +98,11 @@ See in [CONTRIBUTE.md]().
 
 ## History
 
+### 0.1.4
+
+- Updated to support macOS 10.13 (and 10.14 for free). Thanks to @iloveitaly.
+- Updated doc (easier setup and some guidance for contributions).
+
 ### 0.1.3
 
 - Updated README
