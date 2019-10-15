@@ -12,7 +12,7 @@ So now you can finally have a not-far-from-real SSL connection with Pow, with a 
 
 Tunnelss is a mix between the [tunnels gem](https://github.com/jugyo/tunnels) and the [powssl script](https://gist.github.com/paulnicholson/2050941).
 
-1. It builds a root-level certificate (a Certificate Authority) and registers it as a trusted root certificate (you will need to do it manually for Firefox).
+1. It builds a root-level certificate (a Certificate Authority) and registers it as a trusted root certificate (you will need to recognize the root certificate at the OS-level for Chrome and in Firefox directly).
 2. It generates a SSL certificate matching the Pow `.dev` domains.
 2. It runs an EventMachine server which acts as proxy from HTTPS to HTTP (just like tunnels), using the generated certificate so that your browser will not complain your SSL connection is not valid!
 
@@ -29,7 +29,7 @@ Because:
 
 ## Disclaimer
 
-This gem is in early developments and has only been tested under MacOS X 10.8. It may not work in other environments, but feel free to submit pull requests if you make the necessary fixes.
+This gem is in early developments and has only been tested under macOS 10.13 and 10.14. It may not work in other environments, but feel free to submit pull requests if you make the necessary fixes.
 
 ## Installation
 
@@ -58,6 +58,10 @@ Specify HTTP port and HTTPS port with:
 or
 
     $ sudo tunnelss 127.0.0.1:443 127.0.0.1:3000
+
+## Configure your browser
+
+Go to your browser's settings, search for "Certificate" and add the root certificate (`~/.tunnelss/ca/root.crt`) as an authorized CA certificate.
 
 ## Configure
 
@@ -90,11 +94,7 @@ If this occurs you may need to jump into the keychain and mark the `*.dev` cert 
 
 ## Contributing
 
-Run from the local source code:
-
-    $ sudo bundle exec script/run
-
-Feel free to submit pull requests. Please document your changes in the description.
+See in [CONTRIBUTE.md]().
 
 ## History
 

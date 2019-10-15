@@ -67,7 +67,7 @@ module Tunnelss::ConfigureWithPow
     system "openssl x509 -in #{ca_dir}/root.crt -noout -text"
 
     puts "================================================================================"
-    puts "To use the certificate without a warning in Firefox you must add the\n\"#{ca_dir}/cert.pem\" certificate to your Firefox root certificates."
+    puts "To use the certificate without a warning in Firefox you must add the\n\"#{ca_dir}/root.crt\" certificate to your Firefox root certificates."
     puts "================================================================================"
   end
 
