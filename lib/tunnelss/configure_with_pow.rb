@@ -30,35 +30,73 @@ module Tunnelss::ConfigureWithPow
   end
 
   def ca_exists?
-    File.exists?(ca_dir) && File.exists?("#{ca_dir}/key.pem") && File.exists?("#{ca_dir}/cert.pem")
+    File.exists?(ca_dir) && File.exists?("#{ca_dir}/root.key") && File.exists?("#{ca_dir}/root.crt")
   end
 
   def build_ca
     FileUtils.rm_rf(ca_dir) if File.exists?(ca_dir)
     Dir.mkdir(ca_dir)
 
-    puts "Creating SSL keypair for signing #{pow_domain_extensions.join(',')}certificate"
+    prepare_openssl_config
+
+    puts "Creating SSL keypair for signing #{pow_domain_extensions.join(',')} certificate"
     multi_domain_certificate_param = pow_domain_extensions.map { |e| "CN=*.#{e} Domain CA" }.join('/')
-    system "openssl req -newkey rsa:2048 -batch -x509 -sha256 -nodes -subj \"/C=US/O=Developer Certificate/#{multi_domain_certificate_param}\" -keyout #{ca_dir}/key.pem -out #{ca_dir}/cert.pem -days 9999 &> /dev/null"
-    puts "Adding certificate to login keychain as trusted."
-    system "security add-trusted-cert -d -r trustRoot -k #{ENV['HOME']}/Library/Keychains/login.keychain #{ca_dir}/cert.pem"
+
+    system "/usr/local/opt/openssl/bin/openssl req \
+      -new -batch \
+      -config #{ca_dir}/openssl.cnf \
+      -reqexts ca_reqext \
+      -nodes \
+      -subj \"/C=US/O=Pow/#{multi_domain_certificate_param}\" \
+      -keyout #{ca_dir}/root.key \
+      -out #{ca_dir}/root.csr"
+
+    system "/usr/local/opt/openssl/bin/openssl ca -selfsign -batch \
+      -config #{ca_dir}/openssl.cnf \
+      -extensions root_ca_ext \
+      -keyfile #{ca_dir}/root.key \
+      -in #{ca_dir}/root.csr \
+      -out #{ca_dir}/root.crt"
+
+    # system "openssl req -newkey rsa:2048 -batch -x509 -nodes \
+    # -subj \"/C=US/O=Pow/#{multi_domain_certificate_param}\" \
+    # -keyout #{ca_dir}/root.key \
+    # -out #{ca_dir}/root.crt \
+    # -days 9999 &> /dev/null"
+
+    system "openssl x509 -in #{ca_dir}/root.crt -noout -text"
+
     puts "================================================================================"
     puts "To use the certificate without a warning in Firefox you must add the\n\"#{ca_dir}/cert.pem\" certificate to your Firefox root certificates."
     puts "================================================================================"
   end
 
   def build_certificate
-    prepare_openssl_config
-
     puts "Generating new *.#{pow_domain_extensions.join(',')} certificate"
     multi_domain_certificate_param = pow_domain_extensions.map { |e| "CN=*.#{e}" }.join('/')
-    system "openssl req -newkey rsa:2048 -sha256 -batch -nodes -subj \"/C=US/O=Developer Certificate/#{multi_domain_certificate_param}\" -keyout #{dir}/key.pem -out #{dir}/csr.pem -days 9999 &> /dev/null"
+
+    system "/usr/local/opt/openssl/bin/openssl req \
+     -new -batch -nodes \
+     -subj \"/C=US/O=Pow/#{multi_domain_certificate_param}\" \
+     -config #{ca_dir}/openssl.cnf \
+     -keyout #{dir}/key.pem \
+     -out #{dir}/csr.pem"
+
     puts "Signing *.#{pow_domain_extensions.join(',')} certificate"
-    system "openssl ca -config #{ca_dir}/openssl.cnf -policy policy_anything -batch -days 9999 -out #{dir}/cert.pem -infiles #{dir}/csr.pem &> /dev/null"
+    system "/usr/local/opt/openssl/bin/openssl ca \
+    -batch \
+    -config #{ca_dir}/openssl.cnf \
+    -out #{dir}/cert.pem \
+    -infiles #{dir}/csr.pem"
 
     # Build cert chain
     system "cat #{dir}/cert.pem > #{dir}/server.crt"
-    system "cat #{ca_dir}/cert.pem >> #{dir}/server.crt"
+    system "cat #{ca_dir}/root.crt >> #{dir}/server.crt"
+
+    puts "Adding certificate to login keychain as trusted."
+    puts "You may need to mark these certs as trusted in keychain."
+    
+    system "security add-trusted-cert -d -r trustRoot -k #{ENV['HOME']}/Library/Keychains/login.keychain #{dir}/server.crt"
 
     write_pow_domains_to_cache
 
@@ -68,9 +106,13 @@ module Tunnelss::ConfigureWithPow
 
   def prepare_openssl_config
     Dir.mkdir("#{ca_dir}/newcerts") unless File.exists?("#{ca_dir}/newcerts")
+
     system "touch #{ca_dir}/index.txt"
+    system "touch #{ca_dir}/index.txt.attr"
+
     serial = File.exists?("#{ca_dir}/serial") ? File.read("#{ca_dir}/serial").to_i + 1 : 1
     File.open("#{ca_dir}/serial", 'w') {|f| f.puts ("%02d" % serial).to_s}
+
     build_openssl_config_file
   end
 

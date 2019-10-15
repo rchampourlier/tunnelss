@@ -2,3 +2,4 @@
 /*.gem
 /Gemfile.lock
 /pkg
+vendor/bundle
